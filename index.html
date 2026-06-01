@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DARK — Character Connections</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+
+    <!-- Loading screen -->
+    <div id="loading">
+      <div class="loading-inner">
+        <div class="loading-knot">🌀</div>
+        <p id="loading-text">Initializing…</p>
+      </div>
+    </div>
+
+    <!-- Main app (hidden until loaded) -->
+    <div id="app" style="display:none">
+
+      <!-- Top bar -->
+      <header class="topbar">
+        <div class="topbar-brand">
+          <span class="brand-title">DARK</span>
+          <span class="brand-subtitle">Character Connections</span>
+        </div>
+        <div class="topbar-controls">
+          <input id="search-input" type="search" placeholder="Search characters… (⌘K)" autocomplete="off" />
+          <button id="btn-fit" class="icon-btn" title="Fit all characters in view">⊞ Fit</button>
+          <button id="episode-toggle" class="icon-btn" title="Episode guide">📖 Episodes</button>
+        </div>
+      </header>
+
+      <!-- Filters bar -->
+      <div class="filterbar">
+        <div class="filter-group">
+          <span class="filter-label">Time</span>
+          <div id="filter-time" class="filter-buttons"></div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Family</span>
+          <div id="filter-family" class="filter-buttons"></div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">World</span>
+          <div id="filter-world" class="filter-buttons"></div>
+        </div>
+        <button id="filter-reset" class="reset-btn">✕ Reset</button>
+      </div>
+
+      <!-- Content area -->
+      <div class="content">
+
+        <!-- Graph -->
+        <div id="graph"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar"></aside>
+
+      </div>
+
+      <!-- Episode guide panel (slides up) -->
+      <div id="episode-guide">
+        <div class="episode-guide-header">
+          <h2>Episode Guide</h2>
+          <button class="close-panel" onclick="document.getElementById('episode-guide').classList.remove('open');document.getElementById('episode-toggle').classList.remove('active')">✕</button>
+        </div>
+        <div id="episode-content" class="episode-content-scroll"></div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-section">
+          <div class="legend-heading">Relationships</div>
+          <div id="legend-relationships"></div>
+        </div>
+        <div class="legend-section">
+          <div class="legend-heading">Families</div>
+          <div id="legend-families"></div>
+        </div>
+        <div class="legend-section">
+          <div class="legend-heading">Worlds</div>
+          <div class="legend-item"><span class="legend-shape circle"></span><span class="legend-label">Jonas's World</span></div>
+          <div class="legend-item"><span class="legend-shape diamond"></span><span class="legend-label">Eva's World</span></div>
+          <div class="legend-item"><span class="legend-shape star"></span><span class="legend-label">Both Worlds</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
