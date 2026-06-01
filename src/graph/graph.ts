@@ -41,6 +41,7 @@ export class DarkGraph {
         world: c.world,
         character: c,
         photo: c.appearances?.[0]?.photoUrl ?? '',
+        bgSize: 'cover', // will be updated after image loads
       },
     }));
 
@@ -58,6 +59,30 @@ export class DarkGraph {
     this.cy.elements().remove();
     this.cy.add([...nodes, ...edges]);
     this.runLayout();
+
+    // After load, set node dimensions to match each photo's aspect ratio
+    const BASE = 56;
+    this.cy.nodes().forEach(node => {
+      const photo = node.data('photo') as string;
+      if (!photo) return;
+      const img = new Image();
+      img.onload = () => {
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        if (!w || !h) return;
+        const ratio = w / h;
+        if (ratio > 1) {
+          // landscape
+          node.style({ width: Math.round(BASE * ratio), height: BASE });
+        } else if (ratio < 1) {
+          // portrait
+          node.style({ width: BASE, height: Math.round(BASE / ratio) });
+        } else {
+          node.style({ width: BASE, height: BASE });
+        }
+      };
+      img.src = photo;
+    });
   }
 
   applyFilter(state: FilterState, allCharacters: Character[], _allRelationships: Relationship[]): void {
@@ -111,23 +136,29 @@ export class DarkGraph {
   }
 
   private runLayout(): void {
-    this.cy.layout({
+    const layout = this.cy.layout({
       name: 'cose-bilkent' as never,
       animate: true,
       animationDuration: 800,
       randomize: false,
-      idealEdgeLength: 120,
-      nodeRepulsion: 8000,
+      idealEdgeLength: 240,
+      nodeRepulsion: 20000,
       nodeDimensionsIncludeLabels: true,
       // @ts-ignore
       edgeElasticity: 0.45,
-      gravity: 0.15,
+      gravity: 0.08,
       gravityRange: 2.5,
       numIter: 2500,
       tile: true,
-      tilingPaddingVertical: 10,
-      tilingPaddingHorizontal: 10,
-    } as never).run();
+      tilingPaddingVertical: 30,
+      tilingPaddingHorizontal: 30,
+    } as never);
+
+    layout.one('layoutstop', () => {
+      this.cy.fit(this.cy.elements(':visible'), 40);
+    });
+
+    layout.run();
   }
 
   private buildStyle(): cytoscape.StylesheetStyle[] {
@@ -140,9 +171,9 @@ export class DarkGraph {
             const photo = ele.data('photo') as string;
             return photo || 'none';
           },
-          'background-fit': 'cover',
+          'background-fit': 'cover' as never,
           'background-position-x': '50%',
-          'background-position-y': '0%',
+          'background-position-y': '20%',
           'border-color': (ele: NodeSingular) => ele.data('world') === 'Eva' ? '#cc66ff' : ele.data('world') === 'Both' ? '#ffffff' : FAMILY_COLORS[ele.data('family')] ?? '#888',
           'border-width': 3,
           'border-opacity': 0.9,
@@ -157,9 +188,10 @@ export class DarkGraph {
           'text-background-opacity': 1,
           'text-background-padding': '3px',
           'text-background-shape': 'roundrectangle',
-          'width': 52,
-          'height': 52,
-          'shape': (ele: NodeSingular) => ele.data('world') === 'Eva' ? 'diamond' : 'ellipse',
+          'width': 56,
+          'height': 56,
+          'shape': 'roundrectangle',
+          'corner-radius': 6 as never,
           'transition-property': 'border-color, width, height' as never,
           'transition-duration': '0.2s' as never,
           'overlay-padding': '6px',
@@ -207,12 +239,6 @@ export class DarkGraph {
           'text-background-color': 'rgba(0,0,0,0.8)',
           'text-background-opacity': 1,
           'text-background-padding': '3px',
-        },
-      },
-      {
-        selector: 'node[world="Both"]',
-        style: {
-          'shape': 'star',
         },
       },
     ];
