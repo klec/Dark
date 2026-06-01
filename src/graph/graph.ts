@@ -40,7 +40,9 @@ export class DarkGraph {
         family: c.family,
         world: c.world,
         character: c,
-        photo: c.appearances?.[0]?.photoUrl ?? '',
+        photo: c.appearances?.[0]?.photoUrl
+          ? import.meta.env.BASE_URL.replace(/\/$/, '') + c.appearances[0].photoUrl
+          : '',
         bgSize: 'cover', // will be updated after image loads
       },
     }));
